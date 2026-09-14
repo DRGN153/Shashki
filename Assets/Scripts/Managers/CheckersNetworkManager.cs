@@ -24,8 +24,23 @@ public class CheckersNetworkManager : NetworkManager
         var player = playerInstance.GetComponent<PlayerNetwork>();
         NetworkPlayers.Add(player);
         player.LobbyOwner=player.IsWhite = numPlayers == 1;
-        player.DisplayName = player.IsWhite ? "CBET/\b||/|" : "TEMHb||/|";
+        player.DisplayName = player.IsWhite ? "CBETëb||/|" : "TEMHb||/|";
         }
+    public override void OnStartServer()
+    {
+        var boardInstance = Instantiate(boardPrefab);
+        NetworkServer.Spawn(boardInstance);
+        var turnsHandlerInstance=Instantiate(turnsHandlerPrefab);
+        NetworkServer.Spawn(turnsHandlerInstance);
+    }
+    public override void OnServerSceneChanged(string sceneName)
+    {
+        if (sceneName.StartsWith("Game"))
+        {
+            var gameOverHandlerInstance= Instantiate(gameOverHandlerPrefab);
+            NetworkServer.Spawn(gameOverHandlerInstance);
+        }
+    }
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         var player=conn.identity.GetComponent<PlayerNetwork>();
