@@ -17,13 +17,20 @@ public class LobbyMenu : MonoBehaviour
             playerNameTexts[i].text = players[i].DisplayName;
         for (int i = players.Count; i < playerNameTexts.Length; i++)
             playerNameTexts[i].text = "}|{geM urpoka...";
+        startGameButton.interactable = players.Count >= 2;
     }
     void Start()
     {
         PlayerNetwork.ClientOnInfoUpdated += ClientHandleInfoUpdated;
+        PlayerNetwork.AuthorityOnLobbyOwnerStateUpdated += AuthorityHandleLobbyOwnerStateUpdated;
+    }
+    void AuthorityHandleLobbyOwnerStateUpdated(bool state)
+    {
+        startGameButton.gameObject.SetActive(state);
     }
     void OnDestroy()
     {
+        PlayerNetwork.AuthorityOnLobbyOwnerStateUpdated -= AuthorityHandleLobbyOwnerStateUpdated;
         PlayerNetwork.ClientOnInfoUpdated -= ClientHandleInfoUpdated;
     }
     public void StartGame()

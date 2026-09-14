@@ -16,6 +16,20 @@ public class PlayerNetwork : Player
         [Server]
         set { displayName = value; }
     }
+    [SyncVar(hook = nameof(AuthorityHandleLobbyOwnerStateUpdated))]
+    bool lobbyOwner;
+    public bool LobbyOwner
+    {
+        get { return lobbyOwner; }
+        [Server]
+        set { lobbyOwner = value; }
+    }
+    public static event Action<bool> AuthorityOnLobbyOwnerStateUpdated;
+    void AuthorityHandleLobbyOwnerStateUpdated(bool oldState,bool newState)
+    {
+        if (!hasAuthority) return;
+        AuthorityOnLobbyOwnerStateUpdated?.Invoke(newState);
+    }
     void ClientHandleDisplayNameUpdated(string oldName, string newName)
     {
         ClientOnInfoUpdated?.Invoke();
